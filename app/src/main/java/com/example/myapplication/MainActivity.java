@@ -1,5 +1,6 @@
 package com.example.myapplication;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -7,6 +8,7 @@ import androidx.core.content.ContextCompat;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -17,6 +19,7 @@ public class MainActivity extends AppCompatActivity {
     private static final int PERMISSIONS_REQUEST_RECEIVE_SMS = 0;
 
 
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -27,6 +30,26 @@ public class MainActivity extends AppCompatActivity {
 
         // Request the permission immediately here for the first time run
         requestPermissions(Manifest.permission.RECEIVE_SMS, PERMISSIONS_REQUEST_RECEIVE_SMS);
+
+        if(fgService.b_foregroundService)
+        {
+            Intent getIntent = getIntent();
+
+            if(getIntent.getAction()!= null) {
+
+                if (getIntent.getAction().equals("Stop")) {
+                    stopService();
+
+                    //direct end
+                    moveTaskToBack(true);
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        finishAndRemoveTask();
+                    }
+                    System.exit(0);
+                }
+
+            }
+        }
 
 
         btnStartService.setOnClickListener(new View.OnClickListener() {

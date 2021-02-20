@@ -24,7 +24,7 @@ public class fgService extends Service {
     public static BroadcastReceiver mReciver;
     private static final String TAG = "SMSReceiver";
     public static MediaPlayer mp = new MediaPlayer();
-
+    public static boolean b_foregroundService = false;
 
     public static class MyReciver extends BroadcastReceiver {
         @Override
@@ -58,12 +58,26 @@ public class fgService extends Service {
         Intent notificationIntent = new Intent(this, MainActivity.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(this,
                 0, notificationIntent, 0);
+
+        //end option
+
+        Intent notificationcancleIntent = new Intent(this, MainActivity.class);
+        //stop userIntent input
+        notificationcancleIntent.setAction("Stop");
+        PendingIntent canclependingIntent = PendingIntent.getActivity(this,-99,notificationcancleIntent,PendingIntent.FLAG_UPDATE_CURRENT);
+
+
         Notification notification = new NotificationCompat.Builder(this, TAG)
                 .setContentTitle("Foreground Service")
                 .setContentText(input)
                 .setSmallIcon(R.drawable.ic_launcher_foreground)
                 .setContentIntent(pendingIntent)
+                .setStyle(new NotificationCompat.BigTextStyle().bigText("Foreground Service App"))
+                .addAction(R.drawable.ic_launcher_foreground,"EXIT", canclependingIntent)
+                .setAutoCancel(true)
                 .build();
+
+        b_foregroundService = true;
         startForeground(1, notification);
         //do heavy work on a background thread
         //stopSelf();
@@ -74,6 +88,7 @@ public class fgService extends Service {
     public void onDestroy() {
         super.onDestroy();
         unregisterReceiver(mReciver);
+        b_foregroundService = false;
     }
 
     @Nullable
